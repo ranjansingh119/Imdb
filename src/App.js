@@ -1,21 +1,22 @@
 import { React, useState } from 'react';
 import './App.css';
-import MovieCard from './MovieCard';
 import SearchIcon from './search.svg';
+import ComputeData from './ComputeData';
 
 const API_URL = 'http://www.omdbapi.com/?apikey=12e4294';
 
+
+
 const App = () => {
 
-    const[movies, setMovies] = useState([]);
     const[searchTerm, setSearchTerm] = useState('');
-    
-    const searchMovies = async (title) => {
-        const response = await fetch(`${API_URL}&s=${title}`);
-        const movieData = await response.json();
-        setMovies(movieData.Search);
-    }
+    const[url, setUrl] = useState('');
+    const[searchTriggered, setSearchTriggered] = useState(false);
 
+    const HandleSearch = (url) => {
+        setSearchTriggered(true);
+        setUrl(url);
+    }
 
     return ( 
         <div className = "app">
@@ -26,28 +27,12 @@ const App = () => {
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                 ></input>
-                <img src={SearchIcon} 
-                alt="search"
-                onClick={() => searchMovies(searchTerm)}
+                <img src={SearchIcon} alt="search" onClick={() => HandleSearch(`${API_URL}&s=${searchTerm}`)}
                 />
-            </div>
-            {
-                movies.length > 0 ? 
-                (
-                    <div className="container">
-                        {
-                            movies.map((movie) => (
-                                <MovieCard movie={movie}/>
-                            ))
-                        }
-                    </div>
-                ) : (
-                    <div className="empty">
-                        <h2>No movies found</h2>
-                    </div>
-                )
-            }
-           
+            </div>      
+
+            { searchTriggered ? (<ComputeData url={url}/>) : (<></>) }
+            
         </div>
      );
 }
